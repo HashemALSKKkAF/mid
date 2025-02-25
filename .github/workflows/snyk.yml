@@ -12,10 +12,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js (if applicable)
-        uses: actions/setup-node@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+
+      - name: Install dependencies (Python)
+        run: pip install -r requirements.txt
+
+      - name: Install dependencies (Node.js)
+        run: npm install
 
       - name: Install Snyk
         run: npm install -g snyk
@@ -24,7 +35,4 @@ jobs:
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk Test
-        run: snyk test --all-projects
-
-      - name: Monitor Project
-        run: snyk monitor
+        run: snyk test --all-projects --detection-depth=3
